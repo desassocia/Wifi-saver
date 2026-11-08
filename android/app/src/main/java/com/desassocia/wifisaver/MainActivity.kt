@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,10 +28,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import org.json.JSONArray
 import org.json.JSONObject
 
-private val Bg = Color(0xFF070B09)
-private val Panel = Color(0xFF111B14)
-private val Green = Color(0xFF42F58D)
-private val Muted = Color(0xFF9AA99F)
+private val Bg = Color(0xFF050806)
+private val Panel = Color(0xFF101A14)
+private val Panel2 = Color(0xFF15251B)
+private val Green = Color(0xFF55F29A)
+private val Muted = Color(0xFF9BAFA2)
+private val Border = Color(0xFF243B2C)
 data class SavedItem(val id: String, val type: String, val title: String, val value: String)
 
 class MainActivity : ComponentActivity() {
@@ -39,7 +42,7 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = android.graphics.Color.rgb(7, 11, 9)
         window.navigationBarColor = android.graphics.Color.rgb(7, 11, 9)
         setContent {
-            MaterialTheme(colorScheme = darkColorScheme(primary = Green, background = Bg, surface = Panel, onPrimary = Color.Black, onBackground = Color.White, onSurface = Color.White)) {
+            MaterialTheme(colorScheme = darkColorScheme(primary = Green, secondary = Color(0xFF9AF7BC), background = Bg, surface = Panel, onPrimary = Color.Black, onBackground = Color.White, onSurface = Color.White)) {
                 WiFiSaverApp()
             }
         }
@@ -80,13 +83,13 @@ private fun WiFiSaverApp() {
     }
 
     Scaffold(containerColor = Bg, bottomBar = {
-        NavigationBar(containerColor = Color(0xFF0C130E), contentColor = Green) {
+        NavigationBar(containerColor = Color(0xFF09100C), contentColor = Green) {
             listOf("Início", "Navegar", "YouTube", "Biblioteca", "Ajustes").forEach { name ->
                 NavigationBarItem(
                     selected = tab == name, onClick = { tab = name },
                     icon = { Text(when(name) { "Início" -> "⌂"; "Navegar" -> "◎"; "YouTube" -> "▶"; "Biblioteca" -> "▤"; else -> "⚙" }, fontSize = 19.sp) },
                     label = { Text(name, fontSize = 10.sp) },
-                    colors = NavigationBarItemDefaults.colors(selectedIconColor = Green, selectedTextColor = Green, indicatorColor = Color(0xFF193323), unselectedTextColor = Muted)
+                    colors = NavigationBarItemDefaults.colors(selectedIconColor = Green, selectedTextColor = Green, indicatorColor = Color(0xFF1B3A28), unselectedTextColor = Muted)
                 )
             }
         }
@@ -118,14 +121,32 @@ private fun WiFiSaverApp() {
 
 @Composable
 private fun HomeScreen(count: Int, onAddNote: () -> Unit, onAddLink: () -> Unit, onBrowse: () -> Unit, onYoutube: () -> Unit, onLibrary: () -> Unit, onVideo: () -> Unit) {
-    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 18.dp), contentPadding = PaddingValues(top = 24.dp, bottom = 24.dp)) {
+    LazyColumn(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF0B1710), Bg, Bg))).padding(horizontal = 18.dp), contentPadding = PaddingValues(top = 24.dp, bottom = 28.dp)) {
         item {
-            Text("WIFI-SAVER", color = Green, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
-            Spacer(Modifier.height(20.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                Box(Modifier.size(34.dp).background(Color(0xFF173B27), RoundedCornerShape(11.dp)), contentAlignment = Alignment.Center) {
+                    Text("W", color = Green, fontWeight = FontWeight.Black, fontSize = 19.sp)
+                }
+                Column {
+                    Text("WIFI-SAVER", color = Green, fontWeight = FontWeight.Black, letterSpacing = 2.sp, fontSize = 13.sp)
+                    Text("SEU ESPAÇO DIGITAL", color = Muted, fontSize = 8.sp, letterSpacing = 1.5.sp)
+                }
+                Spacer(Modifier.weight(1f))
+                Surface(color = Color(0xFF12271A), shape = RoundedCornerShape(50)) {
+                    Text("● OFFLINE READY", color = Green, fontSize = 8.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp))
+                }
+            }
+            Spacer(Modifier.height(24.dp))
             Text("Seu mundo.\nDo seu jeito.", fontSize = 34.sp, lineHeight = 38.sp, fontWeight = FontWeight.ExtraBold, color = Color.White)
             Text("Salve conteúdos e leve sua biblioteca com você.", color = Muted, fontSize = 14.sp, modifier = Modifier.padding(top = 10.dp, bottom = 22.dp))
-            Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF14291C)), shape = RoundedCornerShape(20.dp), modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(18.dp)) {
+            Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF14291C)), shape = RoundedCornerShape(22.dp), modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(20.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("SEU ESPAÇO", color = Green, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.4.sp)
+                        Spacer(Modifier.weight(1f))
+                        Text("● SALVO NO APARELHO", color = Color(0xFFB5EBC8), fontSize = 8.sp)
+                    }
+                    Spacer(Modifier.height(9.dp))
                     Text("SUA BIBLIOTECA", color = Green, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     Text("$count itens guardados", color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 7.dp))
                     Text("Notas, links e vídeos que você importou.", color = Muted, fontSize = 12.sp)
@@ -152,9 +173,9 @@ private fun HomeScreen(count: Int, onAddNote: () -> Unit, onAddLink: () -> Unit,
 
 @Composable
 private fun HomeTile(icon: String, title: String, subtitle: String, modifier: Modifier, action: () -> Unit) {
-    Card(modifier = modifier.height(112.dp).clickable { action() }, colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(16.dp)) {
+    Card(modifier = modifier.height(122.dp).clickable { action() }, colors = CardDefaults.cardColors(containerColor = Panel), shape = RoundedCornerShape(18.dp), border = androidx.compose.foundation.BorderStroke(1.dp, Border)) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.Center) {
-            Text(icon, color = Green, fontSize = 22.sp)
+            Text(icon, color = Green, fontSize = 23.sp)
             Text(title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
             Text(subtitle, color = Muted, fontSize = 10.sp)
         }
@@ -169,7 +190,7 @@ private fun BrowserScreen(initialUrl: String, onSaveLink: (String, String) -> Un
     val context = LocalContext.current
     val web = remember {
         WebView(context).apply {
-            settings.javaScriptEnabled = true; settings.domStorageEnabled = true; settings.geolocationEnabled = false
+            settings.javaScriptEnabled = true; settings.domStorageEnabled = true; settings.setGeolocationEnabled(false)
             settings.allowFileAccess = false; settings.allowContentAccess = false
             settings.javaScriptCanOpenWindowsAutomatically = false; settings.setSupportMultipleWindows(false)
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
@@ -189,8 +210,9 @@ private fun BrowserScreen(initialUrl: String, onSaveLink: (String, String) -> Un
         }
     }
     DisposableEffect(Unit) { onDispose { web.stopLoading(); web.destroy() } }
-    Column(Modifier.fillMaxSize().background(Bg).padding(12.dp)) {
-        Text("NAVEGADOR", color = Green, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+    Column(Modifier.fillMaxSize().background(Bg).padding(14.dp)) {
+        Text("NAVEGADOR PRIVADO", color = Green, fontWeight = FontWeight.Black, letterSpacing = 1.8.sp, fontSize = 13.sp)
+        Text("Acesse a web com controles de privacidade.", color = Muted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp, bottom = 10.dp))
         Spacer(Modifier.height(10.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(address, { address = it }, modifier = Modifier.weight(1f), singleLine = true, label = { Text("Endereço") })
@@ -217,7 +239,7 @@ private fun YouTubeScreen() {
     val web = remember {
         WebView(context).apply {
             settings.javaScriptEnabled = true; settings.domStorageEnabled = true
-            settings.mediaPlaybackRequiresUserGesture = true; settings.geolocationEnabled = false
+            settings.mediaPlaybackRequiresUserGesture = true; settings.setGeolocationEnabled(false)
             settings.allowFileAccess = false; settings.allowContentAccess = false
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             if (android.os.Build.VERSION.SDK_INT >= 26) settings.safeBrowsingEnabled = true
@@ -227,15 +249,18 @@ private fun YouTubeScreen() {
     }
     DisposableEffect(Unit) { onDispose { web.stopLoading(); web.destroy() } }
     Column(Modifier.fillMaxSize().background(Bg)) {
-        Text("YOUTUBE", color = Green, fontWeight = FontWeight.Black, letterSpacing = 2.sp, modifier = Modifier.padding(14.dp))
+        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Text("YOUTUBE", color = Green, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+            Text("Vídeos online • conexão necessária", color = Muted, fontSize = 10.sp, modifier = Modifier.padding(top = 3.dp))
+        }
         AndroidView(factory = { web }, modifier = Modifier.fillMaxSize())
     }
 }
 
 @Composable
 private fun LibraryScreen(items: List<SavedItem>, onDelete: (SavedItem) -> Unit, onOpen: (SavedItem) -> Unit, onAdd: () -> Unit, onImportVideo: () -> Unit) {
-    Column(Modifier.fillMaxSize().padding(18.dp)) {
-        Text("MINHA BIBLIOTECA", color = Green, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+    Column(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF0B1710), Bg))).padding(18.dp)) {
+        Text("MINHA BIBLIOTECA", color = Green, fontWeight = FontWeight.Black, letterSpacing = 1.8.sp, fontSize = 14.sp)
         Text("${items.size} conteúdos guardados", color = Muted, fontSize = 13.sp, modifier = Modifier.padding(top = 5.dp, bottom = 14.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = onAdd) { Text("+ NOTA") }
@@ -282,8 +307,8 @@ private fun AddDialog(type: String, onDismiss: () -> Unit, onSave: (String, Stri
 
 @Composable
 private fun SettingsScreen() {
-    Column(Modifier.fillMaxSize().padding(20.dp)) {
-        Text("CONFIGURAÇÕES", color = Green, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+    Column(Modifier.fillMaxSize().background(Bg).padding(20.dp)) {
+        Text("AJUSTES E PRIVACIDADE", color = Green, fontWeight = FontWeight.Black, letterSpacing = 1.5.sp, fontSize = 14.sp)
         Spacer(Modifier.height(18.dp))
         Text("Privacidade", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold)
         Text("O navegador bloqueia solicitações de localização GPS, câmera e microfone. Isso não esconde seu endereço IP: sites ainda podem estimar sua região pela conexão.", color = Muted, fontSize = 13.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 8.dp))
