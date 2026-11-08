@@ -43,6 +43,9 @@ public class MainActivity extends Activity {
         s.setAllowFileAccess(true);
         s.setAllowContentAccess(true);
         s.setGeolocationEnabled(false);
+        s.setJavaScriptCanOpenWindowsAutomatically(false);
+        s.setSupportMultipleWindows(false);
+        if (android.os.Build.VERSION.SDK_INT >= 26) s.setSafeBrowsingEnabled(true);
         s.setBuiltInZoomControls(true);
         s.setDisplayZoomControls(false);
         view.setWebChromeClient(new WebChromeClient() {
@@ -54,7 +57,12 @@ public class MainActivity extends Activity {
                 if(status!=null) status.setText(p<100 ? "Carregando "+p+"%" : "Localização bloqueada");
             }
         });
-        view.setWebViewClient(new WebViewClient());
+        view.setWebViewClient(new WebViewClient() {
+            @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest request) {
+                String scheme=request.getUrl().getScheme();
+                return !("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme) || "file".equalsIgnoreCase(scheme));
+            }
+        });
     }
 
     private GradientDrawable panelBg(int color) {
