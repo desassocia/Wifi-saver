@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
         if(!u.matches("(?i)^https?://.*")) u="https://"+u;
         Uri parsed=Uri.parse(u);
         if(!"http".equals(parsed.getScheme()) && !"https".equals(parsed.getScheme()) && !"file".equals(parsed.getScheme())) return;
-        if("file".equals(parsed.getScheme()) && !u.startsWith(offlineDir.getAbsolutePath())) return;
+        if("file".equals(parsed.getScheme()) && !u.startsWith("file://" + offlineDir.getAbsolutePath())) return;
         if(browserPanel!=null) root.removeView(browserPanel);
         browserPanel=new FrameLayout(this);
         browserPanel.setBackgroundColor(Color.rgb(7,12,9));
